@@ -10,7 +10,7 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.status(201).send({ data: user }))
+    .then((user) => res.status(OK_CREATED).send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
@@ -22,7 +22,7 @@ module.exports.createUser = (req, res) => {
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send({ users }))
+    .then((users) => res.status(OK).send({ users }))
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
@@ -38,9 +38,9 @@ module.exports.getUser = (req, res) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        return res.status(ERROR_NOT_FOUND).send({ message: `Ресурс не найден`});
+        return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(200).send(user)
+      res.status(OK).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -55,12 +55,12 @@ module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   const opts = { runValidators: true, new: true };
 
-  User.findByIdAndUpdate( req.user._id, { name, about }, opts )
+  User.findByIdAndUpdate(req.user._id, { name, about }, opts)
     .then((user) => {
       if (!user) {
-        return res.status(ERROR_NOT_FOUND).send({ message: `Ресурс не найден`});
+        return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(201).send({ user })
+      res.status(OK_CREATED).send({ user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -75,12 +75,12 @@ module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   const opts = { runValidators: true, new: true };
 
-  User.findByIdAndUpdate( req.user._id, { avatar }, opts )
+  User.findByIdAndUpdate(req.user._id, { avatar }, opts)
     .then((user) => {
       if (!user) {
-        return res.status(ERROR_NOT_FOUND).send({ message: `Ресурс не найден`});
+        return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(201).send({ user })
+      res.status(OK_CREATED).send({ user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {

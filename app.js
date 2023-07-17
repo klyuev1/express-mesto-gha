@@ -25,11 +25,9 @@ app.use(require('./routes/users'));
 app.use(require('./routes/cards'));
 
 app.use('*', (req, res) => {
-  res.status(ERROR_NOT_FOUND).send({ message: `Ресурс не найден`});
-})
+  res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
+});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
-
-// Другие роуты карточек и пользователя

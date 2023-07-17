@@ -36,11 +36,11 @@ module.exports.removeCard = (req, res) => {
   const { cardId } = req.params;
 
   Card.findByIdAndRemove(cardId)
-    .then((card)=> {
+    .then((card) => {
       if (!card) {
-        return res.status(ERROR_NOT_FOUND).send({ message: `Ресурс не найден`});
+        return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(OK).send({ message: "Карточка удалена" });
+      res.status(OK).send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -51,13 +51,13 @@ module.exports.removeCard = (req, res) => {
     });
 };
 
-module.exports.likeCard = (req, res) =>  {
-  Card.findByIdAndUpdate( req.params.cardId, { $addToSet: { likes: req.user._id } },{ new: true })
+module.exports.likeCard = (req, res) => {
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(ERROR_NOT_FOUND).send({ message: `Ресурс не найден`});
+        return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(OK_CREATED).send(card)
+      res.status(OK_CREATED).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -72,9 +72,9 @@ module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(ERROR_NOT_FOUND).send({ message: `Ресурс не найден`});
+        return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(OK_CREATED).send(card)
+      res.status(OK_CREATED).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -83,7 +83,4 @@ module.exports.dislikeCard = (req, res) => {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
       }
     });
-}
-
-
-
+};
