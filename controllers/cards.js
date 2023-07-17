@@ -40,7 +40,7 @@ module.exports.removeCard = (req, res) => {
       if (!card) {
         return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(OK).send({ message: 'Карточка удалена' });
+      return res.status(OK).send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -57,7 +57,7 @@ module.exports.likeCard = (req, res) => {
       if (!card) {
         return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(OK_CREATED).send(card);
+      return res.status(OK_CREATED).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -74,7 +74,7 @@ module.exports.dislikeCard = (req, res) => {
       if (!card) {
         return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(OK_CREATED).send(card);
+      return res.status(OK_CREATED).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {

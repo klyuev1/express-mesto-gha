@@ -40,7 +40,7 @@ module.exports.getUser = (req, res) => {
       if (!user) {
         return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(OK).send(user);
+      return res.status(OK).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -60,7 +60,7 @@ module.exports.updateUser = (req, res) => {
       if (!user) {
         return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(OK_CREATED).send({ user });
+      return res.status(OK_CREATED).send({ user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -80,7 +80,7 @@ module.exports.updateAvatar = (req, res) => {
       if (!user) {
         return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
       }
-      res.status(OK_CREATED).send({ user });
+      return res.status(OK_CREATED).send({ user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
