@@ -9,13 +9,7 @@ const OK_CREATED = 201;
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.status(OK).send({ cards }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
-      }
-    });
+    .catch((err) => { res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' }); });
 };
 
 module.exports.createCard = (req, res) => {
@@ -23,13 +17,7 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(OK_CREATED).send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
-      }
-    });
+    .catch((err) => { res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' }); });
 };
 
 module.exports.removeCard = (req, res) => {

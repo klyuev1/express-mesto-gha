@@ -12,24 +12,14 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(OK_CREATED).send({ data: user }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
-      }
+      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
     });
 };
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(OK).send({ users }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
-      }
-    });
+    .catch((err) => { res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' }); });
 };
 
 module.exports.getUser = (req, res) => {
@@ -63,7 +53,7 @@ module.exports.updateUser = (req, res) => {
       return res.status(OK_CREATED).send({ user });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
@@ -83,7 +73,7 @@ module.exports.updateAvatar = (req, res) => {
       return res.status(OK_CREATED).send({ user });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
       } else {
         res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
