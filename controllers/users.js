@@ -12,7 +12,11 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((user) => res.status(OK_CREATED).send({ data: user }))
     .catch((err) => {
-      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
+      if (err.name === 'ValidationError') {
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
+      }
     });
 };
 

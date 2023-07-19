@@ -17,7 +17,13 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(OK_CREATED).send({ data: card }))
-    .catch((err) => { res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' }); });
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
+      }
+    });
 };
 
 module.exports.removeCard = (req, res) => {
