@@ -5,23 +5,16 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictingRequestError = require('../errors/ConflictingRequestError');
+const ValidationError = require('../errors/ValidationError');
 
 module.exports.createUser = (req, res, next) => {
   const {
-    name,
-    about,
-    avatar,
-    email,
-    password,
+    name, about, avatar, email, password,
   } = req.body;
 
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      name,
-      about,
-      avatar,
-      email,
-      password: hash,
+      name, about, avatar, email, password: hash,
     }))
     .then((user) => {
       res.send({
@@ -47,10 +40,12 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      if (!user._id) {
+        throw new ValidationError('Авторизация с несуществующими email и password в БД');
+      } // не дописано.... 464 строчка в автотестах
       const payload = { _id: user._id };
       const token = jwt.sign(payload, 'some-secret-key', { expiresIn: '7d' });
       res.cookie('jwt', token);
-      // res.send({ token });
       return res.send({ user: payload });
     })
     .catch(next);
