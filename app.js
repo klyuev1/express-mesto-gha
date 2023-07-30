@@ -1,10 +1,11 @@
 // Подгружаем код
 const express = require('express');
 const mongoose = require('mongoose');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const { createUser, login } = require('./controllers/users');
 const NotFoundError = require('./errors/NotFoundError');
+const InternalServerError = require('./errors/InternalServerError');
 
 // Создаем сервер, подключаемся к БД
 
@@ -44,6 +45,8 @@ app.use('*', () => {
 });
 
 // Запускаем порт
+app.use(errors());
+app.use(InternalServerError);
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
