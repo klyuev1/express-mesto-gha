@@ -1,11 +1,5 @@
 const Card = require('../models/card');
 
-// const ERROR_CODE = 400;
-// const ERROR_NOT_FOUND = 404;
-// const INTERNAL_SERVER_ERROR = 500;
-// const OK = 200;
-// const OK_CREATED = 201;
-
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const NoRightsError = require('../errors/NoRightsError');

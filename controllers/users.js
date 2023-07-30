@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const NotFoundError = require('../errors/NotFoundError');
@@ -47,15 +47,20 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.send({ token });
+      const payload = { _id: user._id };
+      const token = jwt.sign(payload, 'some-secret-key', { expiresIn: '7d' });
+      res.cookie('jwt', token);
+      // res.send({ token });
+      return res.send({ user: payload });
     })
     .catch(next);
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
-  User.findById(req.user)
-    .then((user) => res.send({ user }))
+  const userId = req.user._id;
+  User.findById(userId)
+    .orFail(new NotFoundError('Пользоваетеля с таким id нет'))
+    .then((user) => res.send({ data: user }))
     .catch(next);
 };
 

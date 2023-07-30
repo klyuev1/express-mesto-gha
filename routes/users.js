@@ -2,21 +2,17 @@ const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
 const {
-  getUsers,
-  getUser,
-  updateUser,
-  updateAvatar,
-  getCurrentUser,
+  getUsers, getUser, updateUser, updateAvatar, getCurrentUser,
 } = require('../controllers/users');
 
 // GET -- получить пользователей
 router.get('/users', getUsers);
 
-// GET -- получить пользователя по ID
-router.get('/users/:userId', getUser);
-
 // GET -- получить данные о себе
 router.get('/users/me', getCurrentUser);
+
+// GET -- получить пользователя по ID
+router.get('/users/:userId', getUser);
 
 // PATCH -- обновить данные о себе
 router.patch('/users/me', celebrate({

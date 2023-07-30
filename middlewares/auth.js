@@ -1,23 +1,26 @@
 const jwt = require('jsonwebtoken');
+const ValidationError = require('../errors/ValidationError');
 
-const extractBearerToken = (header) => {
-  header.replace('Bearer ', '');
-};
+// const extractBearerToken = (header) => {
+//   header.replace('Bearer ', '');
+// };
 
 // eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
-  const { authorization } = req.headers;
+  const token = req.cookies.jwt;
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    return res.status(401).send({ message: 'Необходима авторизация' });
+  // !authorization || !authorization.startsWith('Bearer ')
+  if (!token) {
+    throw new ValidationError('Необходима авторизация');
   }
-  const token = extractBearerToken(authorization);
+
+  // const token = extractBearerToken(authorization);
   let payload;
 
   try {
     payload = jwt.verify(token, 'some-secret-key');
   } catch (err) {
-    return res.status(401).send({ message: err });
+    throw new ValidationError('Необходима авторизация');
   }
 
   req.user = payload;
