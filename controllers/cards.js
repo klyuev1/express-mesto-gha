@@ -1,80 +1,79 @@
 const Card = require('../models/card');
 
-const ERROR_CODE = 400;
-const ERROR_NOT_FOUND = 404;
-const INTERNAL_SERVER_ERROR = 500;
-const OK = 200;
-const OK_CREATED = 201;
+// const ERROR_CODE = 400;
+// const ERROR_NOT_FOUND = 404;
+// const INTERNAL_SERVER_ERROR = 500;
+// const OK = 200;
+// const OK_CREATED = 201;
 
-module.exports.getCards = (req, res) => {
+const NotFoundError = require('../errors/NotFoundError');
+const BadRequestError = require('../errors/BadRequestError');
+const NoRightsError = require('../errors/NoRightsError');
+
+module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.status(OK).send({ cards }))
-    .catch((err) => { res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' }); });
+    .then((cards) => res.send({ cards }))
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.status(OK_CREATED).send({ data: card }))
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные.' });
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
+        next(err);
       }
     });
 };
 
-module.exports.removeCard = (req, res) => {
+module.exports.removeCard = (req, res, next) => {
   const { cardId } = req.params;
 
-  Card.findByIdAndRemove(cardId)
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
+        throw new NotFoundError('Карточка с таким ID не найдена');
       }
-      return res.status(OK).send({ message: 'Карточка удалена' });
+      if (!card.owner.equals(req.user._id)) {
+        throw new NoRightsError('Невозможно удалить карту с другим ID пользователя');
+      }
+      card.deleteOne()
+        .then(() => {
+          res.send({ message: 'Карточка удалена' });
+        })
+        .catch(next);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
+        next(new BadRequestError('Переданы некорректные данные'));
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
+        next(err);
       }
     });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
+        throw new NotFoundError('Карточка с таким ID не найдена');
       }
-      return res.status(OK_CREATED).send(card);
+      return res.send(card);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
-      }
-    });
+    .catch(next);
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        return res.status(ERROR_NOT_FOUND).send({ message: 'Ресурс не найден' });
+        throw new NotFoundError('Карточка с таким ID не найдена');
       }
-      return res.status(OK_CREATED).send(card);
+      return res.send(card);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Ошибка' });
-      }
-    });
+    .catch(next);
 };
