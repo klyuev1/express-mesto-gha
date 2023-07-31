@@ -3,6 +3,7 @@ const Card = require('../models/card');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const NoRightsError = require('../errors/NoRightsError');
+
 const CREATED = 201;
 
 module.exports.getCards = (req, res, next) => {
