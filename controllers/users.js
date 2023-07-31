@@ -5,7 +5,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictingRequestError = require('../errors/ConflictingRequestError');
-const ValidationError = require('../errors/ValidationError');
+const CREATED = 201;
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -17,7 +17,7 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
-      res.send({
+      res.status(CREATED).send({
         _id: user._id,
         name: user.name,
         about: user.about,
@@ -32,6 +32,7 @@ module.exports.createUser = (req, res, next) => {
       if (err.code === 11000) {
         next(new ConflictingRequestError('Пользователь с текущим email уже занят'));
       }
+      next(err);
     });
 };
 
@@ -40,9 +41,6 @@ module.exports.login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user._id) {
-        throw new ValidationError('Авторизация с несуществующими email и password в БД');
-      } // не дописано.... 464 строчка в автотестах
       const payload = { _id: user._id };
       const token = jwt.sign(payload, 'some-secret-key', { expiresIn: '7d' });
       res.cookie('jwt', token);

@@ -12,7 +12,11 @@ router.get('/users', getUsers);
 router.get('/users/me', getCurrentUser);
 
 // GET -- получить пользователя по ID
-router.get('/users/:userId', getUser);
+router.get('/users/:userId', celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().length(24).hex().required(),
+  }),
+}), getUser);
 
 // PATCH -- обновить данные о себе
 router.patch('/users/me', celebrate({
