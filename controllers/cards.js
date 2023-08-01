@@ -20,9 +20,8 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные'));
-      } else {
-        next(err);
       }
+      return next(err);
     });
 };
 
@@ -46,9 +45,8 @@ module.exports.removeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new BadRequestError('Переданы некорректные данные'));
-      } else {
-        next(err);
       }
+      return next(err);
     });
 };
 
